@@ -1,0 +1,18 @@
+'''
+goby_tinvest_v1.py
+
+pip install tinvest
+pip install python-decouple
+'''
+
+'''
+__main__
+
+pip3 install tinkoff-investments
+pip3 install python-decouple
+pip3 install pandas
+pip install flask
+pip install flask-sqlalchemy
+
+
+'''

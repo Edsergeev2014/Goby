@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Инструменты
+{% endblock %}
+
+{% block body %}
+
+<!--     bar chart canvas element -->
+<div class="container">
+    <h1>Chart</h1>
+</div>
+<!-- import plugin script -->
+<!--<script src='static/Chart.min.js'></script>-->
+<script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+
+<div class="container border">
+    <canvas id="myChart" width="60" height="40"></canvas>
+</div>
+<!--<div class="container border">-->
+<!--    <p id="myTest">The chart is displaying a simple line chart.</p>-->
+<!--</div>-->
+<!--<script src="{{ url_for('static', filename='js/chart_micro.js') }}"></script>-->
+<!--<script src="{{ url_for('static', filename='js/test.js') }}"></script>-->
+
+<script>
+    // Global parameters:
+    // do not resize the chart canvas when its container does (keep at 600x400px)
+    Chart.defaults.global.responsive = false;
+
+    // define the chart data
+    var chartData = {
+        labels : [{% for item in labels %}
+                   "{{ item }}",
+                  {% endfor %}],
+        datasets : [{
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.0)",
+
+            borderColor: "{{ green_or_red }}",
+            pointRadius: 1,
+            data : [{% for item in values %}
+                      {{ item }},
+                    {% endfor %}],
+        }]
+    };
+
+    // get chart canvas
+    var ctx = document.getElementById("myChart").getContext("2d");
+
+    // create the chart using the chart canvas
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            legend: {
+              display: false,
+              position: 'bottom',
+            },
+            scales: {
+              xAxes: [{
+                display: false,
+              }],
+              yAxes: [{
+                display: false,
+              }]
+            }
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">-->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"> -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+<!--    link rel="icon" href="путь_к_иконке/favicon.ico" type="image/x-icon">-->
+    <title>Goby: {% block title %}{% endblock %}</title>
+</head>
+<body>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm sticky-top">
+      <h5 class="my-0 mr-md-auto font-weight-normal">Web App Development</h5>
+      <nav class="my-2 my-md-0 mr-md-3">
+
+        {% if request.path == "/" %}
+            <a class="p-2 text-dark" href="/">Главная</a>
+        {% else %}
+            <a class="p-2 text-black-50" href="/">Главная</a>
+        {% endif %}
+
+        {% if request.path == "/info" %}
+            <a class="p-2 text-dark" href="/info">Информация</a>
+        {% else %}
+            <a class="p-2 text-black-50" href="/info">Информация</a>
+        {% endif %}
+
+        {% if request.path == "/portfolio" %}
+            <a class="p-2 text-dark" href="/portfolio">Портфель</a>
+        {% else %}
+            <a class="p-2 text-black-50" href="/portfolio">Портфель</a>
+        {% endif %}
+
+        {% if request.path == "/instruments" %}
+          <a class="p-2 text-dark" href="/instruments">Инструменты</a>
+        {% else %}
+          <a class="p-2 text-black-50" href="/instruments">Инструменты</a>
+        {% endif %}
+
+        {% if request.path == "/operations" %}
+          <a class="p-2 text-dark" href="/operations">Операции</a>
+        {% else %}
+          <a class="p-2 text-black-50" href="/operations">Операции</a>
+
+        {% endif %}
+
+
+
+      </nav>
+      <a class="btn btn-outline-primary" href="/">Войти</a>
+    </div>
+    {% block body %}{% endblock %}
+
+    <div class="container">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <p class="col-md-4 mb-0 text-muted">© 2022 Web App Development, Inc</p>
+
+        <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+          <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+        </a>
+
+        <ul class="nav col-md-4 justify-content-end">
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Рынки</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Индексы</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Сигналы</a></li>
+        </ul>
+      </footer>
+    </div>
+</body>
+</html>

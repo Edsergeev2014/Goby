@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Инструменты
+{% endblock %}
+
+{% block body %}
+
+<script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+
+<div class="container">
+    <h1>Страница об инструментах</h1>
+
+    <div class="row">
+        <h2 class="col-10">Акции, фьючерсы, облигации, валюты</h2>
+        <span class="col-2 text-primary text-md-right">{{ current_time }}</span>
+    </div>
+
+    {% for instrument in instruments_info %}
+
+  <div class="b-example-divider"></div>
+    <div class="list-group">
+      <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+<!--        <img src="https://github.com/twbs.png" alt="twbs" class="rounded-circle flex-shrink-0" width="32" height="32">-->
+        <div class="d-flex gap-2 w-100 justify-content-between">
+          <div class="col-9">
+            {% if instrument.trading_status == 5 %}
+                <h6 class="mb-0 text-black">{{ instrument.name }}</h6>
+            {% else %}
+                <h6 class="mb-0 text-black-50">{{ instrument.name }}</h6>
+            {% endif %}
+
+            <div class="row justify-content-between align-items-center">
+                <span class="col-1 small opacity-75">{{ instrument.ticker }}</span>
+                <span class="col-2 small text-info">{{ instrument.sector }}</span>
+                <span class="col-2 small text-black-50">{{ instrument.exchange }}:
+                    <!--{{ instrument.trading_status }}-->
+                    {% if instrument.trading_status == 5 %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock text-success" viewBox="0 0 16 16">
+                          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                        </svg>
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock text-danger" viewBox="0 0 16 16">
+                          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                        </svg>
+                    {% endif %}
+                </span>
+                <span class="col-2 small text-black-50">buy:
+                    {% if instrument.buy_available_flag %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square text-success" viewBox="0 0 16 16">
+                            <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z"/>
+                            <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
+                        </svg>
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill text-warning" viewBox="0 0 16 16">
+                          <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>
+                        </svg>
+                    {% endif %}
+                </span>
+                <span class="col-2 small text-black-50">sell:
+                    {% if instrument.sell_available_flag %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square text-success" viewBox="0 0 16 16">
+                            <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z"/>
+                            <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
+                        </svg>
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill text-warning" viewBox="0 0 16 16">
+                          <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>
+                        </svg>
+                    {% endif %}
+                </span>
+                <span class="col-2 small text-black-50">api:
+                    {% if instrument.api_trade_available_flag %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square text-success" viewBox="0 0 16 16">
+                            <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z"/>
+                            <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
+                        </svg>
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause-fill text-warning" viewBox="0 0 16 16">
+                          <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>
+                        </svg>
+                    {% endif %}
+                </span>
+                <!--График:-->
+                <span class="col-1">
+                    <canvas id="myChart_{{ instrument.ticker }}" width="50" height="30" class="border"></canvas>
+                    <!--<p id="p_{{ instrument.ticker }}" class="small">Тикер</p>-->
+                    <script>
+                        // Global parameters:
+                        Chart.defaults.global.responsive = false;
+
+                        // define the chart data
+                        var chartData = {
+                            labels : [{% for item in instrument.last_7days_prices %}
+                                       "{{ item }}",
+                                      {% endfor %}],
+                            datasets : [{
+                                lineTension: 0.1,
+                                backgroundColor: "rgba(75,192,192,0.0)",
+
+                                borderColor: "{{ instrument.green_or_red }}",
+                                pointRadius: 1,
+                                data : [{% for item in instrument.last_7days_prices %}
+                                          {{ item }},
+                                        {% endfor %}],
+                            }]
+                        };
+
+                        // get chart canvas
+                        var ctx = document.getElementById("myChart_{{ instrument.ticker }}").getContext("2d");
+
+                        // create the chart using the chart canvas
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                legend: {
+                                  display: false,
+                                  position: 'bottom',
+                                },
+                                scales: {
+                                  xAxes: [{
+                                    display: false,
+                                  }],
+                                  yAxes: [{
+                                    display: false,
+                                  }]
+                                }
+                            }
+                        });
+                         // Для теста выполнения скрипта:
+                         // var p = document.getElementById('p_{{ instrument.ticker }}');
+                         // p.innerHTML = '{{ instrument.ticker }}';
+                    </script>
+
+
+
+                </span>
+            </div>
+          </div>
+
+          <div class="float-right">
+            <!--<h6 class="mb-0">{{ instrument.last_price }} {{ instrument.currency }}</h6>-->
+            <!--<h6 class="mb-0">{{ instrument.open_price }} {{ instrument.currency }}</h6>-->
+            <h6 class="mb-0 text-md-right">{{ instrument.close_price }} {{ instrument.currency }}</h6>
+            {% if instrument.difference < 0 %}
+            <small class="opacity-30 text-nowrap text-danger">{{ instrument.difference }}  {{ instrument.currency }} ({{ instrument.percent }}%)</small>
+            {% else %}
+            <small class="opacity-30 text-nowrap text-success">+{{ instrument.difference }}  {{ instrument.currency }} (+{{ instrument.percent }}%)</small>
+            {% endif %}
+          </div>
+
+        </div>
+      </a>
+    </div>
+
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ Информация об аккаунтах
+{% endblock %}
+
+{% block body %}
+
+<!--<div class="b-example-divider"></div>-->
+<div class="container">
+
+    <h1>Информация</h1>
+
+    <div class="row">
+        <h2 class="col-10">Об аккаунте и режиме торгов</h2>
+        <span class="col-2 text-primary">{{ current_time }}</span>
+    </div>
+
+    <div class="list-group list-group-checkable">
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios1" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+        Аккаунты:
+        {% for acc in accounts %}
+          <ul class="list-group list-group-flush">
+            <!--<span class="d-block small opacity-50 text-primary"><b>{{ acc }}</b></span>-->
+
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {% if acc.id == account_active %}
+                    <span class="col-5 d-block small opacity-50 text-primary"><b>{{ acc.id }}</b></span>
+                    <span class="col-4 d-block small opacity-50 text-primary"><b>{{ acc.name }}</b></span>
+                    <span class="col-3 d-block small opacity-50 text-primary"><b>{{ acc.status }}</b></span>
+                {% else %}
+                    <span class="col-5 d-block small opacity-50">{{ acc.id }}</span>
+                    <span class="col-4 d-block small opacity-50">{{ acc.name }}</span>
+                    <span class="col-3 d-block small opacity-50">{{ acc.status }}</span>
+                {% endif %}
+            </li>
+          </ul>
+        {% endfor %}
+
+      </label>
+
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios3" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+        Баланс аккаунта:
+<!--        <span class="d-block small opacity-50">{{ balance_in_currencies }}</span>-->
+        {% for currency, amount in balance_in_currencies.items() %}
+<!--        <ol class="list-group list-group-numbered">-->
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+<!--            <li class="list-group-item">-->
+                <div class="col-9 ms-2 me-auto">{{ currency }}</div>
+                <span class="col-2"><b> {{ amount }} </b></span>
+            </li>
+        </ul>
+        {% endfor %}
+      </label>
+
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios2" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+        Статьи в аккаунте:
+<!--        <span class="d-block small opacity-50">{{ portfolio_articles }}</span>-->
+        {% for article, currency in portfolio_articles.items() %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="col-7 small">{{ article }}</span>
+                    <span class="col-2 small"><b>{{ currency[0] }}</b></span>
+                    <span class="col-1 small">{{ currency[1] }}</span>
+            </li>
+        </ul>
+        {% endfor %}
+      </label>
+
+
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios2" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+        <div class="fw-bold">
+        Позиции в аккаунте:
+        </div>
+<!--        <span class="d-block small opacity-50">{{ portfolio_positions }}</span>-->
+        {% for position in portfolio_positions %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="col-3 small">{{ position.instrument_type if position.instrument_type else ''}}</span>
+                    <span class="col-2 small">{{ position.ticker if position.ticker else '' }}</span>
+                    <span class="col-2 small">{{ (position.quantity_position + ' шт.') if position.quantity_position != '0' else '' }}</span>
+                    <span class="col-1 small">{{ position.settlement_price if position.settlement_price else '' }}</span>
+                    <span class="col-2 small"><b>{{ position.price_position if position.price_position else '' }}</b></span>
+            </li>
+        </ul>
+        {% endfor %}
+
+      </label>
+
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios4" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+          <div class="fw-bold">
+              Ордера на исполнении:
+          </div>
+<!--            <span class="d-block small opacity-50"> {{ orders }}</span>-->
+        {% for order in orders %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="col-4 small">{{ order.date }}</span>
+                    <span class="small">{{ order.status }}</span>
+                    <span class="small">{{ order.figi }}</span>
+                    <span class="small">{{ order.direction }}</span>
+                    <span class="small">{{ 'Заявлено: ' + order.lots_requested + ' шт.' }}</span>
+                    <span class="small">{{ 'Исполнено: ' + order.lots_executed + ' шт.' }}</span>
+                    <span class="small">{{ order.average_position_price[0] }}</span>
+                    <span class="small"><b>{{ order.total_order_amount[0] }}</b></span>
+                    <span class="small">{{ order.currency }}</span>
+                    <span class="small">{{ order.executed_commission if order.executed_commission > 0 else '' }}</span>
+                    <!--<span class="small">{{ order.order_id }}</span>-->
+            </li>
+        </ul>
+        {% endfor %}
+      </label>
+
+    </div>
+
+    <div class="list-group list-group-checkable">
+        <h3 class="col-8">Режим торгов на биржах</h3>
+
+        <label class="list-group-item list-group-item-action py-3">
+        <div class="fw-bold">
+            Биржи:
+        </div>
+            {% for schedule in exchanges_schedules %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {% if schedule.is_trading_day %}
+                    <span class="col-4 small text-primary">{{ schedule.exchange }}</span>
+                    <span class="small text-primary">{{ schedule.today }}</span>
+                    <span class="small text-primary">{{ schedule.is_trading_day }}</span>
+                    <span class="small text-primary">{{ schedule.start_time }}</span>
+                    <span class="small text-primary">{{ schedule.end_time }}</span>
+                    <span class="small text-primary">{{ schedule.market_order_start_time }}</span>
+                    <span class="small text-primary">{{ schedule.market_order_end_time }}</span>
+                    {% else %}
+                    <span class="col-4 small text-black-50">{{ schedule.exchange }}</span>
+                    <span class="small text-black-50">{{ schedule.today }}</span>
+                    <span class="small text-black-50">{{ schedule.is_trading_day }}</span>
+                    <span class="small text-black-50">{{ schedule.start_time }}</span>
+                    <span class="small text-black-50">{{ schedule.end_time }}</span>
+                    <span class="small text-black-50">{{ schedule.market_order_start_time }}</span>
+                    <span class="small text-black-50">{{ schedule.market_order_end_time }}</span>
+                    {% endif %}
+
+<!--                    <span class="small">{{ schedule.exchange }}</span>-->
+            </li>
+
+            </ul>
+            {% endfor %}
+
+        </label>
+
+    </div>
+
+</div>
+<div class="b-example-divider"></div>
+{% endblock %}

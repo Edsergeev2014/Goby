@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Операции
+{% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+    <h1>Операции с инструментами</h1>
+    <div class="row">
+        <h2 class="col-10">Акции, фьючерсы, облигации, валюты</h2>
+    </div>
+    <label class="list-group-item py-3">
+        <h3>Операции:</h3>
+        <!--<span class="d-block small opacity-50"> {{ operations }}</span>-->
+        <ul class="list-group list-group-flush">
+            <div class="list-group-item list-group-item-action  d-flex justify-content-between align-items-center">
+                <span class="col-2 small">Дата</span>
+                <span class="col-3 small">Операция</span>
+                <span class="col-2 small">Инструмент</span>
+                <span class="col-1 small">Кол.</span>
+                <span class="col-1 small">Цена</span>
+                <span class="col-1 small">Сумма</span>
+                <span class="col-1 small">Валюта</span>
+            </div>
+<!--            <div class="b-example-divider"></div>-->
+
+        {% for operation in operations %}
+<!--        <ul class="list-group list-group-flush border">-->
+            <li class="list-group-item list-group-item-action  d-flex justify-content-between align-items-center">
+                <span class="col-2 small">{{ operation.date if operation.date else ''}}</span>
+                <span class="col-3 small">{{ (operation.operation_type if operation.operation_type else '') + ' ' + (operation.instrument_type if operation.instrument_type else '')}}</span>
+                <span class="col-2 small">{{ operation.ticker if operation.ticker else '' }}</span>
+                <span class="col-1 small">{{ (operation.quantity + ' шт.') if operation.quantity != '0' else '' }}</span>
+                <span class="col-1 small">{{ operation.price[0] if operation.price[0] else '' }}</span>
+                <span class="col-1 small"><b>{{ operation.payment[0] if operation.payment[0] else '' }}</b></span>
+                <span class="col-1 small">{{ operation.currency if operation.currency else ''}}</span>
+            </li>
+        </ul>
+        {% endfor %}
+      </label>
+
+</div>
+{% endblock %}
