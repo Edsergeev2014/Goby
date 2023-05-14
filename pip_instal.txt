@@ -1,12 +1,13 @@
 '''
+Устаревший вариант:
 goby_tinvest_v1.py
-
 pip install tinvest
 pip install python-decouple
 '''
 
+# Загружаем библиотеки python через Project Setting Interpreter:
 '''
-__main__
+# файл __main__:
 
 pip3 install tinkoff-investments
 pip3 install python-decouple
@@ -14,5 +15,13 @@ pip3 install pandas
 pip install flask
 pip install flask-sqlalchemy
 
+# файл goby.py:
+
+pip3 install matplotlib
+pip3 install mplfinance
+
+# Cтартовый запуск проекта - файл app.py
+# Запуск Flask в среде Windows:
+# app.run('127.0.0.1', port=5000, debug=True)
 
 '''

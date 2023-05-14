@@ -1,8 +1,13 @@
+#
+# from tinkoff.invest.sandbox.client import Client
 from tinkoff.invest import Account, Client, AsyncClient, CloseSandboxAccountResponse, MoneyValue, OperationState, OrderDirection, OrderType, InstrumentStatus, InstrumentIdType, MarketDataRequest, InstrumentsRequest, CandleInterval
 from tinkoff.invest import OperationType, TradingDay
 from tinkoff.invest import RequestError as error
 from tinkoff.invest import Quotation
 from tinkoff.invest import PortfolioRequest
+from tinkoff.invest.constants import INVEST_GRPC_API_SANDBOX
+# INVEST_GRPC_API - "боевой",
+# INVEST_GRPC_API_SANDBOX - "песочница"
 from decouple import AutoConfig
 
 import time, datetime
@@ -10,7 +15,8 @@ import pytz
 from pytz import timezone
 import locale
 # устанавливаем локаль
-locale.setlocale(locale.LC_ALL, ('ru_RU', 'UTF-8'))
+# locale.setlocale(locale.LC_ALL, ('ru_RU', 'UTF-8'))   # выдаёт ошибку, ранее работал
+locale.setlocale(locale.LC_ALL)
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
@@ -44,7 +50,8 @@ class Goby():
             yield i
 
     def get_trading_activity(self):
-        with Client(token=self.__tsc_token) as client:
+        with Client(token=self.__tsc_token, target=INVEST_GRPC_API_SANDBOX) as client:
+        # with Client(token=self.__tsc_token) as client:
             response = client.instruments.trading_schedules(from_=datetime.datetime.now(),to=datetime.datetime.now())
         return response.exchanges
 
