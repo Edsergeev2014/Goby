@@ -147,6 +147,16 @@ class Description():
         else: return
         return argument_rus
 
+    def exchange_activity(self, period: str = None, argument: bool = False):
+        if period is 'day':
+            return 'торговый день' if argument else 'неторговый день'
+        elif period is 'time':
+            return 'торговое время' if argument else 'неторговое время'
+        elif period is 'status':
+            return 'Биржа открыта' if argument else 'Биржа закрыта'
+        else:
+            return None
+
     def trading_status(self, argument: str = None):
         argument_text = SecurityTradingStatus(argument)
         if argument_text == 0: argument_number = 0
@@ -155,6 +165,7 @@ class Description():
         elif argument_text == 3: argument_number = 3
         elif argument_text == 4: argument_number = 4
         elif argument_text == 5: argument_number = 5
-        else: argument_rus = None
+        else: argument_number = None
+        # else: argument_rus = None
         return argument_number
         # Расшифровка значений: https://tinkoff.github.io/investAPI/instruments/#instrumentstatus

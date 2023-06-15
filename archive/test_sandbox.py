@@ -2,7 +2,7 @@ from decouple import AutoConfig
 from tinkoff.invest.sandbox.client import Client
 from tinkoff.invest.services import SandboxService as sandboxclient
 
-__config = AutoConfig(search_path='assets/tsc_tokens/sandbox')
+__config = AutoConfig(search_path='../assets/tsc_tokens/sandbox')
 __tsc_token = __config('TSC_TOKEN')
 # __tsc_token = 't.BEKlBzkKpyoQMaXEh9a3GNoPPU0WqY0eSQsippnNwWN0C9GnKIt-_qg7Y1k0nEs_T5OiuMaK4UfuOw20C4pTQQ'
 # print(__tsc_token)

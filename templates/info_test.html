@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ Информация об аккаунтах
+{% endblock %}
+
+{% block body %}
+
+<!--<div class="b-example-divider"></div>-->
+<div class="container">
+
+    <h1>Информация</h1>
+
+    <div class="row">
+        <h2 class="col-10">Об аккаунте и режиме торгов</h2>
+        <span class="col-2 text-primary">{{ current_time }}</span>
+    </div>
+
+
+    <div class="list-group list-group-checkable">
+        <h3 class="col-8">Режим торгов на биржах</h3>
+
+        <label class="list-group-item list-group-item-action py-3">
+            <span class="fw-bold">
+                Биржи:
+            </span>
+            <ul class="list-group list-group-flush">
+<!--                Заголовок таблицы с расписанием бирж на сегодня-->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="col-4 small text-primary"><b>{{ exchanges_table_head[0] }}</b></span>
+                    <span class="small text-primary"><b>{{ exchanges_table_head[1] }}</b></span>
+                    <span class="small text-primary"><b>{{ exchanges_table_head[2] }}</b></span>
+                    <span class="small text-primary"><b>{{ exchanges_table_head[3] }}</b></span>
+                </li>
+<!--                Таблица с расписанием бирж на сегодня-->
+                {% for schedule in exchanges_schedules %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+<!--                Если биржа открыта: торговый день и торговое время:-->
+                    {% if schedule.exchange_activity_status %}
+<!--                Проверка на важность биржи:-->
+                    {% if schedule.exchange_main %}
+                    <span class="col-4 small text-primary"><b>{{ schedule.exchange }}</b></span>
+                    {% else %}
+                    <span class="col-4 small text-primary">{{ schedule.exchange }}</span>
+                    {% endif %}
+                    <span class="small text-primary">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}</span>
+                    <span class="small text-primary">{{ schedule.start_time }}</span>
+                    <span class="small text-primary">{{ schedule.end_time }}</span>
+<!--                    <span class="small text-primary">{{ schedule.market_order_start_time }}</span>-->
+<!--                    <span class="small text-primary">{{ schedule.market_order_end_time }}</span>-->
+                    {% else %}
+<!--                Если биржа закрыта: неторговый день или неторговое время:-->
+<!--                Проверка на важность биржи:-->
+                    {% if schedule.exchange_main %}
+                    <span class="col-4 small text-black-50"><b>{{ schedule.exchange }}</b></span>
+                    {% else %}
+                    <span class="col-4 small text-black-50">{{ schedule.exchange }}</span>
+                    {% endif %}
+                    <span class="small text-black-50">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}{{ ' - ' }}{{ schedule.exchange_day_activity_description }}{{ ', ' }}{{ schedule.exchange_time_activity_description }}</span>
+                    <span class="small text-black-50">{{ schedule.start_time }}</span>
+                    <span class="small text-black-50">{{ schedule.end_time }}</span>
+<!--                    <span class="small text-black-50">{{ schedule.market_order_start_time }}</span>-->
+<!--                    <span class="small text-black-50">{{ schedule.market_order_end_time }}</span>-->
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+
+        </label>
+    </div>
+
+    <div class="list-group list-group-checkable">
+<!--      <input class="list-group-item-check" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadios1" value="">-->
+      <label class="list-group-item list-group-item-action py-3">
+        <span class="fw-bold">
+            Счета:
+        </span>
+        {% for acc in accounts %}
+          <ul class="list-group list-group-flush">
+            <!--<span class="d-block small opacity-50 text-primary"><b>{{ acc }}</b></span>-->
+
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {% if acc.account_is_active %}
+                    <span class="col-4 d-block small opacity-50 text-primary">{{ acc.name }}</span>
+                    <span class="col-5 d-block small opacity-50 text-primary">ID: {{ acc.id }}</span>
+                    <span class="col-3 d-block small opacity-50 text-primary">{{ acc.status }}</span>
+                {% else %}
+                    <span class="col-5 d-block small opacity-50">{{ acc.id }}</span>
+                    <span class="col-4 d-block small opacity-50">ID: {{ acc.name }}</span>
+                    <span class="col-3 d-block small opacity-50">{{ acc.status }}</span>
+                {% endif %}
+            </li>
+          </ul>
+        {% endfor %}
+
+      </label>
+    </div>
+
+</div>
+<div class="b-example-divider"></div>
+{% endblock %}

@@ -1,26 +1,48 @@
 from flask import Flask, render_template, url_for
-from goby import Goby
-
+# from goby_test import Goby
+# import goby_test
+# from models.info import Info
+from controllers.controller import Controller_Info
 from datetime import time
+import asyncio
+
+''' Принимаем Методы для обработки данных: '''
+info = Controller_Info()
 
 app = Flask(__name__)
-goby = Goby()
-
+# goby = goby_test.Goby()
+# goby = Goby()
 
 @app.route('/')
 def index():
     return render_template("index.html")
 
 
-@app.route('/info')
-def info():
+@app.route('/info_test')
+async def info_test():
     ''' Текущее время и день '''
-    current_time = goby.get_msc(goby.current_datetime(), is_datetime='date')
+    # current_time = goby.get_msc(goby.current_datetime(), is_datetime='date')
+    # current_time = info.current_datetime
+    current_time = info.current_datetime
 
-    ''' Список активных аккаунтов '''
-    accounts = goby.get_accounts(content='list_dict')
-    # print(accounts[0])
-    account_id = accounts[0]['id']
+    portfolio_articles = None
+    balance_in_currencies = dict({'rus':0})
+    portfolio_positions = None
+    orders = None
+    operations = None
+    exchanges_table_head = info.exchanges_table_head()
+    exchanges_schedules = await info.exchanges_schedules()
+    # print(exchanges_schedules)
+    # return render_template("info.html",
+    #                        current_time=current_time)
+
+    # ''' Список активных аккаунтов '''
+    accounts = await info.accounts()
+    # accounts = goby.get_accounts(content='list_dict')
+    # account_id = None
+    # account_active = None
+    # print(accounts)
+    # account_id = accounts[0]['id']
 #
 #     # ''' Статьи портфеля '''
 #     # portfolio_articles = goby.get_portfolio_articles(account_id)
@@ -37,34 +59,19 @@ def info():
 #     # ''' Список операций в портфеле за выбранный период: '''
 #     # # operations = goby.get_operations(request=goby.request_blank(account_id=account_id), content='list_dict')
 #     #
-#     ''' Режим и расписание торгов на биржах '''
-    exchanges_schedules = goby.get_exchanges_activity(content='list_dict',
-                                                      exchanges=['MOEX',
-                                                                 'MOEX_INVESTBOX',
-                                                                  'MOEX_MORNING',
-                                                                  'MOEX_PLUS',
-                                                                  'SPB',
-                                                                  'SPB_DE',
-                                                                  'SPB_DE_MORNING',
-                                                                  'SPB_EUROBONDS',
-                                                                  'SPB_MORNING',
-                                                                  'SPB_MORNING_WEEKEND',
-                                                                  'SPB_RU_MORNING',
-                                                                  'SPB_WEEKEND',
-                                                                  ])
-
-    return render_template("info.html",
-                           current_time=current_time,
+#
+    return render_template("info_test.html",
+                           current_time = current_time,
+                           exchanges_table_head = exchanges_table_head,
+                           exchanges_schedules= exchanges_schedules,
                            accounts=accounts,
-                           account_active=account_id,
                            # portfolio_articles=portfolio_articles,
                            # balance_in_currencies=balance_in_currencies,
                            # portfolio_positions=portfolio_positions,
                            # orders=orders,
-                           # operations=operations,
-                           exchanges_schedules=exchanges_schedules
+                           # operations=operations
                            )
-#
+# #
 #
 # @app.route('/portfolio')
 # def portfolio():
@@ -112,13 +119,13 @@ def info():
 #
 #     return render_template("operations.html", operations=operations)
 
-
-@app.route("/chart")
-def chart():
-    legend = 'Monthly Data'
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
-    return render_template('chart.html', values=values, labels=labels, legend=legend)
+#
+# @app.route("/chart")
+# def chart():
+#     legend = 'Monthly Data'
+#     labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+#     values = [10, 9, 8, 7, 6, 4, 7, 8]
+#     return render_template('chart.html', values=values, labels=labels, legend=legend)
 
 
 @app.route("/chart_free")
@@ -134,3 +141,6 @@ def chart_free():
 if __name__ == "__main__":
     # app.run(debug=True)
     app.run('127.0.0.1', port=5000, debug=True)
+
+    # C:\Users\Эдуард\PycharmProjects\Goby\venv\Scripts\activate.bat
+    # pip install Flask-Async

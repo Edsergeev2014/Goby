@@ -5,8 +5,9 @@ pip install tinvest
 pip install python-decouple
 '''
 
-# Загружаем библиотеки python через Project Setting Interpreter:
 '''
+# Актуальный вариант:
+# Загружаем библиотеки python через Project Setting Interpreter:
 # файл __main__:
 
 pip3 install tinkoff-investments
@@ -14,6 +15,8 @@ pip3 install python-decouple
 pip3 install pandas
 pip install flask
 pip install flask-sqlalchemy
+pip install Flask-Async (если не работает - добавить pip install asgiref)
+
 
 # файл goby.py:
 

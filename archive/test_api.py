@@ -8,7 +8,7 @@ from tinkoff.invest.constants import INVEST_GRPC_API
 # INVEST_GRPC_API_SANDBOX - "песочница"
 
 ''' OnlyRead Token'''
-__config = AutoConfig(search_path='assets/tsc_tokens/onlyread')
+__config = AutoConfig(search_path='../assets/tsc_tokens/onlyread')
 ''' Sandbox Token'''
 # __config = AutoConfig(search_path='assets/tsc_tokens/sandbox')
 
