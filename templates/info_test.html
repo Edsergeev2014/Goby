@@ -18,53 +18,65 @@
 
 
     <div class="list-group list-group-checkable">
-        <h3 class="col-8">Режим торгов на биржах</h3>
 
         <label class="list-group-item list-group-item-action py-3">
             <span class="fw-bold">
                 Биржи:
             </span>
-            <ul class="list-group list-group-flush">
-<!--                Заголовок таблицы с расписанием бирж на сегодня-->
+            <h3 class="col-8">Режим торгов на биржах</h3>
+
+    <!--            <ul class="list-group list-group-flush">-->
+            <form class="list-group list-group-flush" method="get" action="exchange_schedule" role="form">
+    <!--                Заголовок таблицы с расписанием бирж на сегодня-->
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span class="col-4 small text-primary"><b>{{ exchanges_table_head[0] }}</b></span>
-                    <span class="small text-primary"><b>{{ exchanges_table_head[1] }}</b></span>
-                    <span class="small text-primary"><b>{{ exchanges_table_head[2] }}</b></span>
-                    <span class="small text-primary"><b>{{ exchanges_table_head[3] }}</b></span>
+                    <span class="col-3 small text-primary"><b>{{ exchanges_table_head[0] }}</b></span>
+                    <span class="col small text-primary"><b>{{ exchanges_table_head[1] }}</b></span>
+                    <span class="col-2 small text-primary"><b>{{ exchanges_table_head[2] }}</b></span>
+                    <span class="col-2 small text-primary"><b>{{ exchanges_table_head[3] }}</b></span>
                 </li>
-<!--                Таблица с расписанием бирж на сегодня-->
+    <!--                Таблица с расписанием бирж на сегодня-->
                 {% for schedule in exchanges_schedules %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-<!--                Если биржа открыта: торговый день и торговое время:-->
+    <!--                Если биржа открыта: торговый день и торговое время:-->
                     {% if schedule.exchange_activity_status %}
-<!--                Проверка на важность биржи:-->
+    <!--                Проверка на важность биржи:-->
                     {% if schedule.exchange_main %}
-                    <span class="col-4 small text-primary"><b>{{ schedule.exchange }}</b></span>
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                        <span class="col-3 small text-primary"><b>{{ schedule.exchange }}</b></span>
+                    </button>
                     {% else %}
-                    <span class="col-4 small text-primary">{{ schedule.exchange }}</span>
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                        <span class="col-3 small text-primary">{{ schedule.exchange }}</span>
+                    </button>
+
                     {% endif %}
-                    <span class="small text-primary">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}</span>
-                    <span class="small text-primary">{{ schedule.start_time }}</span>
-                    <span class="small text-primary">{{ schedule.end_time }}</span>
-<!--                    <span class="small text-primary">{{ schedule.market_order_start_time }}</span>-->
-<!--                    <span class="small text-primary">{{ schedule.market_order_end_time }}</span>-->
+                    <span class="col small text-primary">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}</span>
+                    <span class="col-2 small text-primary">{{ schedule.start_time }}</span>
+                    <span class="col-2 small text-primary">{{ schedule.end_time }}</span>
+    <!--                    <span class="small text-primary">{{ schedule.market_order_start_time }}</span>-->
+    <!--                    <span class="small text-primary">{{ schedule.market_order_end_time }}</span>-->
                     {% else %}
-<!--                Если биржа закрыта: неторговый день или неторговое время:-->
-<!--                Проверка на важность биржи:-->
+    <!--                Если биржа закрыта: неторговый день или неторговое время:-->
+    <!--                Проверка на важность биржи:-->
                     {% if schedule.exchange_main %}
-                    <span class="col-4 small text-black-50"><b>{{ schedule.exchange }}</b></span>
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                        <span class="col-3 small text-black-50"><b>{{ schedule.exchange }}</b></span>
+                    </button>
                     {% else %}
-                    <span class="col-4 small text-black-50">{{ schedule.exchange }}</span>
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                        <span class="col-3 small text-black-50">{{ schedule.exchange }}</span>
+                    </button>
                     {% endif %}
-                    <span class="small text-black-50">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}{{ ' - ' }}{{ schedule.exchange_day_activity_description }}{{ ', ' }}{{ schedule.exchange_time_activity_description }}</span>
-                    <span class="small text-black-50">{{ schedule.start_time }}</span>
-                    <span class="small text-black-50">{{ schedule.end_time }}</span>
-<!--                    <span class="small text-black-50">{{ schedule.market_order_start_time }}</span>-->
-<!--                    <span class="small text-black-50">{{ schedule.market_order_end_time }}</span>-->
+                    <span class="col small text-black-50">{{ schedule.today }}{{ ': ' }}{{ schedule.exchange_activity_status_description }}{{ ' -\n' }}{{ schedule.exchange_day_activity_description }}{{ ',\n' }}{{ schedule.exchange_time_activity_description }}</span>
+                    <span class="col-2 small text-black-50">{{ schedule.start_time }}</span>
+                    <span class="col-2 small text-black-50">{{ schedule.end_time }}</span>
+    <!--                    <span class="small text-black-50">{{ schedule.market_order_start_time }}</span>-->
+    <!--                    <span class="small text-black-50">{{ schedule.market_order_end_time }}</span>-->
                     {% endif %}
                 </li>
                 {% endfor %}
-            </ul>
+            </form>
+    <!--            </ul>-->
 
         </label>
     </div>
@@ -95,6 +107,7 @@
 
       </label>
     </div>
+
 
 </div>
 <div class="b-example-divider"></div>

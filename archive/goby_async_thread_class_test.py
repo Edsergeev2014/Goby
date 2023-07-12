@@ -18,7 +18,7 @@ import time, datetime
 
 # Режимы токенов:
 ''' OnlyRead Token'''
-__config = AutoConfig(search_path='assets/tsc_tokens/onlyread')
+__config = AutoConfig(search_path='../assets/tsc_tokens/onlyread')
 ''' Sandbox Token'''
 # __config = AutoConfig(search_path='assets/tsc_tokens/sandbox')
 
@@ -35,7 +35,7 @@ class AsyncLoopThread(Thread):
 
 class Goby():
     def __init__(self):
-        self.__config = AutoConfig(search_path='assets/tsc_tokens/onlyread')
+        self.__config = AutoConfig(search_path='../assets/tsc_tokens/onlyread')
         self.__tsc_token = self.__config('TSC_TOKEN')
         self.__target = INVEST_GRPC_API_SANDBOX
 

@@ -94,7 +94,7 @@ def info():
 #                            # legend=legend,
 #                            # labels=labels
 #                            )
-#
+
 #
 # @app.route('/instruments/<string:name>/<int:id>')
 # def instruments_details(name, id):

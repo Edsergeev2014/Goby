@@ -1,14 +1,15 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 # from goby_test import Goby
 # import goby_test
 # from models.info import Info
 from controllers.controller import Controller_Info
+from controllers.controller import Controller_Instruments
 from datetime import time
 import asyncio
 
 ''' Принимаем Методы для обработки данных: '''
 info = Controller_Info()
-
+t_instruments = Controller_Instruments()
 app = Flask(__name__)
 # goby = goby_test.Goby()
 # goby = Goby()
@@ -77,31 +78,32 @@ async def info_test():
 # def portfolio():
 #     return render_template("portfolio.html")
 #
-#
-# @app.route('/instruments')
-# def instruments():
-#     ''' Текущее время и день '''
-#     current_time = goby.get_msc(goby.current_datetime(), is_datetime='date')
-#     shares = ['FNKO', 'HSC', 'OII', 'PUMP', 'AAPL', 'GOOGL', 'MXL', 'GRMN', 'KLAC', 'ONTO']
-#     instruments_info = goby.get_instruments_info(shares)
-#
-#     # Временные переменные для тестирования отображения графика:
-#     # legend = ''
-#     # labels = ["", "", "", "", "", "", ""]
-#     # values = [6, 8, 7, 6, 4, 7, 8]
-#     # green = "rgba(50,205,50,1)"
-#     # red = "rgba(220,20,60,1)"
-#     # green_or_red = green if values[-1]>values[0] else red
-#
-#     return render_template("instruments.html",
-#                            current_time=current_time,
-#                            instruments_info=instruments_info,
-#                            # values=values,
-#                            # green_or_red=green_or_red,
-#                            # legend=legend,
-#                            # labels=labels
-#                            )
-#
+
+@app.route('/instruments')
+async def instruments():
+    ''' Текущее время и день '''
+    current_time = info.current_datetime
+    shares_tickers = ['FNKO', 'NVRI', 'OII', 'PUMP', 'AAPL', 'GOOGL', 'MXL', 'GRMN', 'KLAC', 'ONTO']
+    instruments_info = await t_instruments.get_instruments_info(tickers=shares_tickers)
+    # instruments_info = await t_instruments.get_instruments_info_test()
+
+    # Временные переменные для тестирования отображения графика:
+    # legend = ''
+    # labels = ["", "", "", "", "", "", ""]
+    # values = [6, 8, 7, 6, 4, 7, 8]
+    # green = "rgba(50,205,50,1)"
+    # red = "rgba(220,20,60,1)"
+    # green_or_red = green if values[-1]>values[0] else red
+
+    return render_template("instruments.html",
+                           current_time=current_time,
+                           instruments_info=instruments_info,
+                           # values=values,
+                           # green_or_red=green_or_red,
+                           # legend=legend,
+                           # labels=labels
+                           )
+
 #
 # @app.route('/instruments/<string:name>/<int:id>')
 # def instruments_details(name, id):
@@ -137,6 +139,30 @@ def chart_free():
     red = "rgba(220,20,60,1)"
     green_or_red = green if values[-1]>values[0] else red
     return render_template('chart_free.html', values=values, labels=labels, legend=legend, green_or_red=green_or_red)
+
+@app.route("/exchange_schedule", methods=['GET', 'POST'])
+async def exchange_schedule():
+    if request.method == 'GET':
+        # print("request.form: ", request.args['schedule.exchange_en'])
+        # print("request.args: ", request.args)
+        exchange = request.args['schedule.exchange_en']
+    elif request.method == 'POST':
+        # print("request.form: ", request.args['schedule.exchange_en'])
+        exchange = request.form['schedule.exchange_en']
+    else: exchange = None
+    if exchange:
+        exchange_ru = info.exchange_ru(exchange)
+    # return render_template('exchange_schedule.html', exchange=request.form['schedule.exchange'])
+    else: exchange_ru = None
+    # exchange_schedule = await info.exchange_schadule(exchange)
+    get_exchange_schedule_per_week = await info.get_exchange_schedule_per_week(exchange)
+    get_exchange_schedule_per_week_table_head = info.get_exchange_schedule_per_week_table_head()
+    return render_template('exchange_schedule.html',
+                           exchange_en=exchange,
+                           exchange_ru=exchange_ru,
+                           exchange_schedule=get_exchange_schedule_per_week,
+                           table_head=get_exchange_schedule_per_week_table_head
+                           )
 
 if __name__ == "__main__":
     # app.run(debug=True)

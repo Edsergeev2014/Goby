@@ -13,6 +13,7 @@ from assets.arguments import Description
 from tinkoff.invest import Account, Client, AsyncClient, OperationState, OrderDirection, OrderType, InstrumentStatus, InstrumentIdType, MarketDataRequest, InstrumentsRequest, CandleInterval
 from tinkoff.invest import Quotation, MoneyValue
 from tinkoff.invest import TradingDay
+# from tinkoff.invest import TradingSchedule
 
 # Загружаем режимы токенов:
 from tinkoff.invest.constants import INVEST_GRPC_API_SANDBOX
@@ -95,82 +96,32 @@ class Goby():
         else: fmt = '%Y-%m-%d %H:%M:%S %Z%z'
         return datetime.datetime.strptime(datetime_string, fmt)
 
+
     ''' Расписание торгов на биржах '''
 
     async def get_trading_activity(self):
         async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
         # with Client(token=self.__tsc_token) as client:
             response = await client.instruments.trading_schedules(from_=datetime.datetime.now(),to=datetime.datetime.now())
+            # print('get_trading_activity: ', response)
         return response.exchanges
 
-    async def get_trading_schedules(self):
+    async def get_trading_schedules(self, exchange: str = None):
         async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
         # with Client(token=self.__tsc_token) as client:
-            response = await client.instruments.trading_schedules()
-        return response.exchanges
+            if exchange:
+                response = await client.instruments.trading_schedules(exchange=exchange)
+            else:
+                response = await client.instruments.trading_schedules()
+        response =  response.exchanges[0]
+        # tradingschedule = TradingSchedule()
+        # response = tradingschedule.days
+        # return response.exchanges
+        return response
 
     def trading_day(self):
         return TradingDay()
 
-    # async def get_exchanges_activity(self, content: str = None, exchanges: list = None, sorted: bool = False):
-    #     # response = self.get_trading_activity()
-    #     response = await self.get_trading_activity()
-    #     # print('get_trading_activity: ', response)
-    #     # return response     # возвращает Весь список бирж
-    #     description = Description()
-    #     trading_day = TradingDay()
-    #     # Если ответ на запрос о торговых днях бирж не пустой:
-    #     if response is not None:
-    #         if content == 'print':
-    #             # ''' Печать Развернутого содержания отчета о счетах: '''
-    #             print(cls.CYAN+'Биржи: '+cls.END)
-    #             if exchanges is not None:
-    #                 for exchange_info in response:
-    #                     # if exchange_info.exchange == exchanges:
-    #                     if exchange_info.exchange in exchanges:
-    #                         print(cls.CYAN+'=>'+cls.END, exchange_info.exchange, 'Дни:', exchange_info.days, 'Начало торгов:', exchange_info.start_time, 'Завершение торгов:', exchange_info.end_time, 'Начало заявок:', exchange_info.market_order_start_time, 'Завершение заявок:', exchange_info.market_order_end_time, sep=' ')
-    #             print()
-    #             return
-    #         elif content == 'list_dict':
-    #             response_list = list()
-    #             # print('response: ', response)
-    #             # Выполняем: Цикл по списку бирж, формируем для каждой: exchange_info.exchange, exchange_info.days
-    #             # далее: цикл по exchange_info.days - TradingDay каждой биржи.
-    #             # Упаковываем в единый словарь выбранных бирж и их расписаний:
-    #             if exchanges is not None:
-    #                 # Перебираем все биржи из полученного списка:
-    #                 for exchange_info in response:
-    #                     # Если биржа из списка существует в нашем списке, получаем по ней график работы 'days':
-    #                     # if exchange_info.exchange == exchanges:
-    #                     if exchange_info.exchange in exchanges:
-    #                         # Получаем график работы биржи:
-    #                         # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
-    #                         trading_days_info = exchange_info.days
-    #                         trading_days_info = trading_days_info[0]
-    #                         # return trading_days_info[0]
-    #                         exchange_data = dict(exchange=description.exchanges(exchange_info.exchange),
-    #                                              day=self.get_msc(trading_days_info.date, is_datetime='date'),
-    #                                              is_trading_day=trading_days_info.is_trading_day,
-    #                                              start_time=self.get_msc(trading_days_info.start_time, is_datetime='time'),
-    #                                              end_time=self.get_msc(trading_days_info.end_time, is_datetime='time'),
-    #                                              # market_order_start_time=self.get_msc(trading_days_info.market_order_start_time, is_datetime='time'),
-    #                                              # market_order_end_time=self.get_msc(trading_days_info.market_order_end_time, is_datetime='time'),
-    #                                              today='Сегодня' if self.get_msc(trading_days_info.date, is_datetime='date') == self.get_msc(datetime.datetime.now(), is_datetime='date') else self.get_msc(trading_days_info.date, is_datetime='date')
-    #                                              )
-    #                         # print('exchange_info: ', exchange_info)
-    #                         # print('exchange_data: ', exchange_data)
-    #                         response_list.append(exchange_data)
-    #                 # Сортируем список бирж по названию, если задано это условие:
-    #                 if sorted:
-    #                     # Определяем ключ для сортировки (название биржи):
-    #                     def target_key(target_exchanges):
-    #                         return target_exchanges['exchange']
-    #                     # print("response_list: ", type(response_list), response_list)
-    #                     response_list.sort(key=target_key)
-    #             # print('response_list: ', response_list)
-    #             return response_list
-    #     else:
-    #         return response
 
     ''' Сервис СЧЕТОВ  '''
     ''' Получить список открытых аккаунтов '''
@@ -180,3 +131,107 @@ class Goby():
             response = await client.users.get_accounts()
             # print("responce: ", responce)
             return response.accounts
+
+
+    ''' СЕРВИС ИНСТРУМЕНТОВ '''
+    ''' Получить информацию по акции '''
+    async def get_instrument_info(self, ticker='', figi=''):
+        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+            if figi:
+                # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id='BBG000B9XRY4')
+                response = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id=figi)
+                # print("figi, response: ", response)
+            elif ticker:
+                # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER, class_code='SPBXM', id='AAPL')
+                response = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER, class_code='SPBXM', id=ticker)
+                # print("ticker, response: ", response)
+            else:
+                print(f"Goby: Заполните данные по запросу акции: figi - {figi}, ticker - {ticker}.")
+            return response.instrument if any([figi,ticker]) else None
+
+    ''' Получить информацию по нескольким акциям '''
+    async def get_instruments_info(self, tickers: list = None, figies: list = None):
+        pass
+
+    ''' Получить список всех акций: '''
+    async def get_all_shares(self, instrument_status=InstrumentStatus.INSTRUMENT_STATUS_ALL):
+        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+            response = await client.instruments.shares(instrument_status=instrument_status)
+            # print("response: ", response)
+            return response.instruments
+
+    ''' Получить список любых инструментов: '''
+    async def get_any_instrument(self, t_instrument='', instrument_status=InstrumentStatus.INSTRUMENT_STATUS_ALL):
+        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+            if t_instrument == 'share': response = await client.instruments.shares(instrument_status=instrument_status)
+            if t_instrument == 'currency': response = await client.instruments.currencies(instrument_status=instrument_status)
+            if t_instrument == 'bond': response = await client.instruments.bonds(instrument_status=instrument_status)
+            if t_instrument == 'etf': response = await client.instruments.etfs(instrument_status=instrument_status)
+            if t_instrument == 'future': response = await client.instruments.futures(instrument_status=instrument_status)
+            # print("response: ", response)
+            return response.instruments
+
+
+    ''' Запрос списка и содержания всех акций и облигаций'''
+    # def getMarketStocks(self):
+    #     response = self.__client.get_market_stocks()
+    #     return response
+    #
+    # def getMarketBonds(self):
+    #     response = self.__client.get_market_bonds()
+    #     return response
+    #
+    # def getMarketByTicker(self, ticker):
+    #     response = self.__client.get_market_search_by_ticker(ticker)
+    #     return response
+
+    ''' Получить цену актива '''
+    async def get_market_price(self, figi='', ticker=''):
+        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+            # response = client.market_data.get_last_prices(figi=figi)
+            if figi:
+                response = await client.market_data.get_last_prices(figi=[str(figi)])
+            elif ticker:
+                response = await client.market_data.get_last_prices(ticker=[str(ticker)])
+            else: return None
+            # print("response: ", response)
+            return response.last_prices
+
+    ''' Получить свечи по инструменту '''
+    async def get_stock_candles(self, figi, from_, to, interval):
+        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+            response = await client.market_data.get_candles(figi=figi, from_=from_, to=to, interval=interval)
+            '''format: from=datetime.datetime(2021,1,1), to=datetime.datetime.now(), interval=CandleInterval.CANDLE_INTERVAL_DAY '''
+            # print("response: ", response)
+            return response.candles
+
+    ''' Создаем  list-файл '''
+
+    def createListData(self, stock_candle):
+        new_row = dict()
+        my_list = list()
+        # print(df_stock)
+        for row in stock_candle:
+            ''' Проверка содержания: '''
+            # print(f"time: {'{:%d %B}'.format(goby.utc_2_msc(row.time))}, "
+            #       f"high: {'{:.2f}'.format(goby.price_to_float(row.high))}, "
+            #       f"low: {'{:.2f}'.format(goby.price_to_float(row.low))}, "
+            #       f"open: {'{:.2f}'.format(goby.price_to_float(row.open))}, "
+            #       f"close: {'{:.2f}'.format(goby.price_to_float(row.close))}, "
+            #       f"volume: {'{:.0f}'.format(row.volume)}, "
+            #       f"is_complete: {row.is_complete} "
+            #       )
+            new_row = {
+                "time": f'{self.utc_2_msc(row.time)}',
+                # "time": datetime.datetime.strptime(row.time, '%b %d %Y %I:%M%p'),
+                "high": float('{:.2f}'.format(self.price_to_float(row.high))),
+                "low": float('{:.2f}'.format(self.price_to_float(row.low))),
+                "open": float('{:.2f}'.format(self.price_to_float(row.open))),
+                "close": float('{:.2f}'.format(self.price_to_float(row.close))),
+                "volume": int('{:.0f}'.format(row.volume)),
+                "is_complete": row.is_complete
+            }
+            # print(new_row)
+            my_list.append(new_row)
+            # print(my_list)
+        return my_list

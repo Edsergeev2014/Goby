@@ -144,7 +144,8 @@ class Description():
         elif argument_info.exchange == 'SPB_MORNING_WEEKEND': argument_rus = 'СПБ Биржа MORNING_WEEKEND'
         elif argument_info.exchange == 'SPB_RU_MORNING': argument_rus = 'СПБ Биржа RU_MORNING'
         elif argument_info.exchange == 'SPB_WEEKEND': argument_rus = 'СПБ Биржа WEEKEND'
-        else: return
+        elif argument_info.exchange == 'NYSE': argument_rus = 'NYSE биржа'
+        else: return '--'
         return argument_rus
 
     def exchange_activity(self, period: str = None, argument: bool = False):

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ Расписание работы биржи "{{ exchange_ru }}"
+{% endblock %}
+
+{% block body %}
+
+<!--<div class="b-example-divider"></div>-->
+<div class="container">
+
+    <h1 >Информация</h1>
+
+    <div class="row">
+        <h2 class="col-10">Об аккаунте и режиме торгов</h2>
+        <span class="col-2 text-primary">{{ current_time }}</span>
+    </div>
+
+    <h4>Расписание биржи </h4>
+<!--    <h3 class="text-primary">{{ exchange_ru }}:</h3>-->
+<!--    <h6>{{ exchange_schedule }}-->
+
+    <label class="list-group-item list-group-item-action py-3">
+        <span class="fw-bold">
+            {{ exchange_ru }}:
+        </span>
+<!--         Заголовок таблицы с расписанием бирж на сегодня&ndash;&gt;-->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="col-2 small text-primary"><b>{{ table_head[0] }}</b></span>
+            <span class="col small text-primary"><b>{{ table_head[1] }}</b></span>
+            <span class="col-2 small text-primary"><b>{{ table_head[2] }}</b></span>
+            <span class="col-2 small text-primary"><b>{{ table_head[3] }}</b></span>
+        </li>
+
+<!--                Таблица с расписанием бирж на неделю-->
+        {% for schedule in exchange_schedule %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+<!--                Если биржа открыта: торговый день и торговое время:-->
+            {% if schedule.is_trading_day %}
+            <span class="col-2 small text-primary">{{ schedule.day }}</span>
+            <span class="col small text-primary">{{ schedule.exchange_activity_status_description }}: {{ schedule.exchange_day_activity_description }}</span>
+            <span class="col-2 small text-primary">{{ schedule.start_time }}</span>
+            <span class="col-2 small text-primary">{{ schedule.end_time }}</span>
+            {% else %}
+<!--                Если биржа закрыта: неторговый день или неторговое время:-->
+            <span class="col-2 small text-black-50">{{ schedule.day }}</span>
+            <span class="col small text-black-50">{{ schedule.exchange_activity_status_description }}: {{ schedule.exchange_day_activity_description }}</span>
+            <span class="col-2 small text-black-50">{{ schedule.start_time }}</span>
+            <span class="col-2 small text-black-50">{{ schedule.end_time }}</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </label>
+
+    <span class="small text-black-50">{{ schedule }}</span>
+
+</div>
+
+<div class="b-example-divider"></div>
+
+{% endblock %}
