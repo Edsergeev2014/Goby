@@ -1,8 +1,8 @@
 from tinkoff.invest import OperationType, OrderExecutionReportStatus, OrderDirection, AccountStatus
 from tinkoff.invest import TradingSchedule, SecurityTradingStatus
 
-
 class Description():
+
 
     ''' Обработка инструментов '''
     def currency_type(self, currency_type: str = None, flag: str = None, capitalize: bool = False):
@@ -132,20 +132,25 @@ class Description():
 
     def exchanges(self, argument: str = None):
         argument_info = TradingSchedule(argument)
-        if argument_info.exchange == 'MOEX': argument_rus = 'Московская биржа'    # TradingSchedule(exchange='MOEX', days=[TradingDay(date=datetime.datetime(2022, 3, 2, 0, 0, tzinfo=datetime.timezone.utc), is_trading_day=True, start_time=datetime.datetime(2022, 3, 2, 7, 0, tzinfo=datetime.timezone.utc), end_time=datetime.datetime(2022, 3, 2, 15, 39, tzinfo=datetime.timezone.utc), market_order_start_time=datetime.datetime(2022, 3, 2, 7, 0, tzinfo=datetime.timezone.utc), market_order_end_time=datetime.datetime(2022, 3, 2, 15, 45, tzinfo=datetime.timezone.utc))]),
-        elif argument_info.exchange == 'MOEX_INVESTBOX': argument_rus = 'Московская биржа INVESTBOX'
-        elif argument_info.exchange == 'MOEX_MORNING': argument_rus = 'Московская биржа MORNING'
-        elif argument_info.exchange == 'MOEX_PLUS': argument_rus = 'Московская биржа PLUS'
-        elif argument_info.exchange == 'SPB': argument_rus = 'СПБ Биржа'
-        elif argument_info.exchange == 'SPB_DE': argument_rus = 'СПБ Биржа DE'
-        elif argument_info.exchange == 'SPB_DE_MORNING': argument_rus = 'СПБ Биржа MORNING'
-        elif argument_info.exchange == 'SPB_EUROBONDS': argument_rus = 'СПБ Биржа EUROBONDS'
-        elif argument_info.exchange == 'SPB_MORNING': argument_rus = 'СПБ Биржа MORNING'
-        elif argument_info.exchange == 'SPB_MORNING_WEEKEND': argument_rus = 'СПБ Биржа MORNING_WEEKEND'
-        elif argument_info.exchange == 'SPB_RU_MORNING': argument_rus = 'СПБ Биржа RU_MORNING'
-        elif argument_info.exchange == 'SPB_WEEKEND': argument_rus = 'СПБ Биржа WEEKEND'
-        elif argument_info.exchange == 'NYSE': argument_rus = 'NYSE биржа'
-        else: return '--'
+        # print('argument_info: ', argument_info)
+        # print('argument_info.exchange: ', argument_info.exchange)
+        # TradingSchedule(exchange='MOEX', days=[TradingDay(date=datetime.datetime(2022, 3, 2, 0, 0, tzinfo=datetime.timezone.utc), is_trading_day=True, start_time=datetime.datetime(2022, 3, 2, 7, 0, tzinfo=datetime.timezone.utc), end_time=datetime.datetime(2022, 3, 2, 15, 39, tzinfo=datetime.timezone.utc), market_order_start_time=datetime.datetime(2022, 3, 2, 7, 0, tzinfo=datetime.timezone.utc), market_order_end_time=datetime.datetime(2022, 3, 2, 15, 45, tzinfo=datetime.timezone.utc))]),
+        if argument_info.exchange == 'MOEX': argument_rus = ["Московская биржа","Торги на фондовом рынке с 09:50 до 18:50.", "Аукцион открытия: 09:50—10:00. Основная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50"]
+        elif argument_info.exchange == 'MOEX_INVESTBOX': argument_rus = ["Московская биржа INVESTBOX","",""]
+        elif argument_info.exchange == 'MOEX_MORNING': argument_rus = ["Московская биржа MORNING","",""]
+        elif argument_info.exchange == 'MOEX_PLUS': argument_rus = ["Московская биржа PLUS", "Торги на фондовом рынке + вечерняя сессия.", "Аукцион открытия: 09:50 — 10:00. Основная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50. Аукцион открытия: 19:00—19:05. Вечерняя торговая сессия: 19:05—23:50"]
+        elif argument_info.exchange == 'MOEX_EVENING_WEEKEND': argument_rus = ["Московская биржа","Торги на фондовом рынке + вечерняя сессия + торговля на выходных","Аукцион открытия: 09:50 — 10:00. Основная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50. Аукцион открытия: 19:00—19:05. Вечерняя торговая сессия: 19:05—23:50. Основная торговая сессия выходного дня: 10:00—19:00"]
+        elif argument_info.exchange == 'SPB': argument_rus = ["СПБ Биржа","",""]
+        elif argument_info.exchange == 'SPB_DE': argument_rus = ["СПБ Биржа DE","",""]
+        elif argument_info.exchange == 'SPB_DE_MORNING': argument_rus = ["СПБ Биржа MORNING","",""]
+        elif argument_info.exchange == 'SPB_EUROBONDS': argument_rus = ["СПБ Биржа EUROBONDS","",""]
+        elif argument_info.exchange == 'SPB_MORNING': argument_rus = ["СПБ Биржа MORNING","",""]
+        elif argument_info.exchange == 'SPB_MORNING_WEEKEND': argument_rus = ["СПБ Биржа MORNING_WEEKEND","",""]
+        elif argument_info.exchange == 'SPB_RU_MORNING': argument_rus = ["СПБ Биржа RU_MORNING","",""]
+        elif argument_info.exchange == 'SPB_WEEKEND': argument_rus = ["СПБ Биржа WEEKEND","",""]
+        elif argument_info.exchange == 'NYSE': argument_rus = ["NYSE биржа","",""]
+        else: return ['--', '--', '--']
+        # print('argument_rus: ', argument_info.exchange, type(argument_rus), argument_rus)
         return argument_rus
 
     def exchange_activity(self, period: str = None, argument: bool = False):

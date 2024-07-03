@@ -13,6 +13,7 @@ class T_Systems():
         self.goby = Goby()
         self.figi_tickers_json_file = 'assets/figi.json'
         self.figi_tickers_json_file_test = 'assets/figi_test.json'
+        self.exchanges_json_file = 'assets/exchanges.json'
 
     ''' Создаем список всех акций по FIGI и TICKER: '''
     async def create_figi_tickers_json_file(self, file: str = None):
@@ -72,21 +73,29 @@ class T_Systems():
 
     ''' Запись в JSON-файл'''
     def writeJson(self, data, file: str = None):
-        file = self.figi_tickers_json_file
+        if file == 'exchanges': file = self.exchanges_json_file
+        elif file == 'figi': file = self.figi_tickers_json_file
+        else: file = self.figi_tickers_json_file
         return data.to_json(file, orient="index", indent=2, force_ascii=False)
 
     ''' Чтение из JSON-файла'''
     def readJson(self, file: str = None):
+        if file == 'exchanges': file = self.exchanges_json_file
+        elif file == 'figi': file = 'assets/figi.json'
+        else: file = 'assets/figi.json'
         # file = self.figi_tickers_json_file
-        file = 'assets/figi.json'
-        data = pd.read_json(file, orient='index')
-        # print("Данные из json-файла: ")
-        # print(sj.head(3))
-        return data
+        try:
+            data = pd.read_json(file, orient='index')
+            # print("Данные из json-файла: ")
+            # print(sj.head(3))
+            return data
+        except: return
 
     ''' Получаем данные об акции из json-файла:'''
+    # Получаем figi по его ticker
     def figi(self, ticker, file: str = None):
-        file = self.figi_tickers_json_file
+        file_ = self.figi_tickers_json_file
+
         try:
             data = self.readJson(file=file)
             # print('data: ', data)
@@ -96,6 +105,7 @@ class T_Systems():
         except:
             print(f'Данные figi по запросу {ticker} не найдены в {file}.')
             return
+    # Получаем ticker по его figi:
     def ticker(self, figi, file: str = None):
         file = self.figi_tickers_json_file
         try:

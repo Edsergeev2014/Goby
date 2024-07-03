@@ -17,7 +17,9 @@ class T_Instruments():
     async def get_instruments_info(self, tickers: list = None, figies: list = None):
         response_list = list()
         description = Description()
+        ffigies = list()
 
+        # Получаем figi из json-файла по его ticker
         if tickers is not None:
             ''' Получаем figi из файла данных json по его ticker '''
             if figies is None: figies = list()
@@ -25,10 +27,19 @@ class T_Instruments():
             for ticker in tickers:
                 figi_ = self.t_systems.figi(ticker=ticker)
                 if figi_: figies.append(figi_)
-                figi_ = ''
-
+                # figi_ = ''
+        # Получаем данные из api по figi инструмента
         if figies is not None:
+            # Проверка на запрос только одного инструмента: type str вместо list
+            # print('figies: ', type(figies), figies)
+            # figies = list(figies)
+            # if type(figies) != 'list':
+            if type(figies) != type(ffigies):
+                ffigies.append(figies)
+                figies = ffigies
+                # print('figies: ', type(figies), figies)
             for figi in figies:
+                # print('figi: ', type(figi), figi)
                 instrument_data = await self.goby.get_instrument_info(figi=figi)
                 if instrument_data is None: break   # Проверка на пустое значение (не найден инструмент по figi)
                 # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id='BBG000B9XRY4')
@@ -83,7 +94,9 @@ class T_Instruments():
                                        last_7days_prices=last_7days_prices,
                                        green_or_red=green if last_7days_prices[-1] > last_7days_prices[0] else red,     # Цвет графика
                                        currency=description.currency_type(instrument_data.currency, flag='simbol'),
-                                       exchange=instrument_data.exchange,
+                                       # exchange=description.exchanges(instrument_data.exchange[0]),
+                                       exchange=description.exchanges(instrument_data.exchange)[0],
+                                       exchange_schedule = description.exchanges(instrument_data.exchange)[1] + "\n" + description.exchanges(instrument_data.exchange)[2],
                                        trading_status=description.trading_status(instrument_data.trading_status),
                                        buy_available_flag=instrument_data.buy_available_flag,
                                        sell_available_flag=instrument_data.sell_available_flag,
@@ -94,5 +107,5 @@ class T_Instruments():
                 response_list.append(instrument_info)
         # print("response_list: ", response_list)
         else:
-            print("Instruments: Заполните данные по запросу акции")
+            print("Instruments: Заполните данные по запросу акции.")
         return response_list

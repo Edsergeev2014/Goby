@@ -1,15 +1,17 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 # from goby_test import Goby
 # import goby_test
 # from models.info import Info
 from controllers.controller import Controller_Info
 from controllers.controller import Controller_Instruments
+from controllers.controller import Controller_Portfolio
 from datetime import time
 import asyncio
 
 ''' Принимаем Методы для обработки данных: '''
 info = Controller_Info()
 t_instruments = Controller_Instruments()
+t_portfolio = Controller_Portfolio()
 app = Flask(__name__)
 # goby = goby_test.Goby()
 # goby = Goby()
@@ -42,7 +44,7 @@ async def info_test():
     # accounts = goby.get_accounts(content='list_dict')
     # account_id = None
     # account_active = None
-    # print(accounts)
+    # print('accounts(info_test): ', type(accounts), accounts)
     # account_id = accounts[0]['id']
 #
 #     # ''' Статьи портфеля '''
@@ -74,16 +76,21 @@ async def info_test():
                            )
 # #
 #
-# @app.route('/portfolio')
-# def portfolio():
-#     return render_template("portfolio.html")
-#
+@app.route('/portfolio')
+async def portfolio():
+    portfolio_info = await t_portfolio.get_portfolio_positions()
+    # print('portfolio_info: ', portfolio_info[0])
+    return render_template("portfolio.html",
+                           portfolio_info = portfolio_info
+                           )
+
 
 @app.route('/instruments')
 async def instruments():
     ''' Текущее время и день '''
     current_time = info.current_datetime
-    shares_tickers = ['FNKO', 'NVRI', 'OII', 'PUMP', 'AAPL', 'GOOGL', 'MXL', 'GRMN', 'KLAC', 'ONTO']
+    # shares_tickers = ['FNKO', 'NVRI', 'OII', 'PUMP', 'AAPL', 'GOOGL', 'MXL', 'GRMN', 'KLAC', 'ONTO']
+    shares_tickers = ['AFKS', 'FESH', 'RTKM', 'CHMF', 'MGNT']
     instruments_info = await t_instruments.get_instruments_info(tickers=shares_tickers)
     # instruments_info = await t_instruments.get_instruments_info_test()
 
@@ -150,19 +157,40 @@ async def exchange_schedule():
         # print("request.form: ", request.args['schedule.exchange_en'])
         exchange = request.form['schedule.exchange_en']
     else: exchange = None
+    print("exchange: ", exchange)
     if exchange:
-        exchange_ru = info.exchange_ru(exchange)
-    # return render_template('exchange_schedule.html', exchange=request.form['schedule.exchange'])
-    else: exchange_ru = None
-    # exchange_schedule = await info.exchange_schadule(exchange)
-    get_exchange_schedule_per_week = await info.get_exchange_schedule_per_week(exchange)
-    get_exchange_schedule_per_week_table_head = info.get_exchange_schedule_per_week_table_head()
-    return render_template('exchange_schedule.html',
-                           exchange_en=exchange,
-                           exchange_ru=exchange_ru,
-                           exchange_schedule=get_exchange_schedule_per_week,
-                           table_head=get_exchange_schedule_per_week_table_head
-                           )
+        if exchange == 'exchanges':
+            exchanges = await info.exchanges_schedules()
+            print("Список всех бирж: ")
+            for exchange in exchanges:
+                print(exchange)
+        else:
+            # exchange_ru = info.exchange_ru(exchange)
+            get_exchange_schedule_per_week = await info.get_exchange_schedule_per_week(exchange)
+            get_exchange_schedule_per_week_table_head = info.get_exchange_schedule_per_week_table_head()
+            print('get_exchange_schedule_per_week[0],[0]: ', get_exchange_schedule_per_week[0][0])
+            # return render_template('exchange_schedule.html', exchange=request.form['schedule.exchange'])
+            # exchange_schedule = await info.exchange_schadule(exchange)
+            return render_template('exchange_schedule.html',
+                                   exchange_en=exchange,
+                                   # exchange_ru=exchange_ru,
+                                   exchange_ru=get_exchange_schedule_per_week[0][0],
+                                   exchange_annotation_schedule=get_exchange_schedule_per_week[0][1],
+                                   exchange_annotation_schedule_per_day=get_exchange_schedule_per_week[0][2],
+                                   exchange_schedule=get_exchange_schedule_per_week[1],
+                                   table_head=get_exchange_schedule_per_week_table_head
+                               )
+    else:
+        exchange_ru = None
+        return redirect(url_for('info_test'))
+        # return  render_template('exchange_schedule.html',
+        #                        exchange_en='',
+        #                        exchange_ru='',
+        #                        exchange_annotation_schedule='',
+        #                        exchange_annotation_schedule_per_day='',
+        #                        exchange_schedule='',
+        #                        table_head=''
+        #                    )
 
 if __name__ == "__main__":
     # app.run(debug=True)

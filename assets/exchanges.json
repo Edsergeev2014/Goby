@@ -1,0 +1,68 @@
+{
+  "0": {
+    "exchange_en": "NYSE",
+    "exchange_rus": "NYSE биржа",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "1": {
+    "exchange_en": "MOEX_EVENING_WEEKEND",
+    "exchange_rus": "Московская биржа EVENING_WEEKEND",
+    "exchange_main": true,
+    "exchange_schedule": "Торги на фондовом рынке + вечерняя сессия + торговля на выходных.\nАукцион открытия: 09:50 — 10:00. Основная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50. Аукцион открытия: 19:00—19:05. Вечерняя торговая сессия: 19:05—23:50.\nОсновная торговая сессия выходного дня: 10:00—19:00"
+  },
+  "2": {
+    "exchange_en": "MOEX",
+    "exchange_rus": "Московская биржа",
+    "exchange_main": false,
+    "exchange_schedule": "Торги на фондовом рынке с 09:50 до 18:50.\nАукцион открытия: 09:50—10:00.\nОсновная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50"
+  },
+  "3": {
+    "exchange_en": "MOEX_MORNING",
+    "exchange_rus": "Московская биржа MORNING",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "4": {
+    "exchange_en": "MOEX_PLUS",
+    "exchange_rus": "Московская биржа PLUS",
+    "exchange_main": false,
+    "exchange_schedule": "Торги на фондовом рынке + вечерняя сессия.\nАукцион открытия: 09:50 — 10:00. Основная торговая сессия: 10:00—18:40. Аукцион закрытия: 18:40—18:50. Аукцион открытия: 19:00—19:05. Вечерняя торговая сессия: 19:05—23:50"
+  },
+  "5": {
+    "exchange_en": "SPB",
+    "exchange_rus": "СПБ Биржа",
+    "exchange_main": true,
+    "exchange_schedule": "\n"
+  },
+  "6": {
+    "exchange_en": "SPB_DE",
+    "exchange_rus": "СПБ Биржа DE",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "7": {
+    "exchange_en": "SPB_MORNING",
+    "exchange_rus": "СПБ Биржа MORNING",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "8": {
+    "exchange_en": "SPB_MORNING_WEEKEND",
+    "exchange_rus": "СПБ Биржа MORNING_WEEKEND",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "9": {
+    "exchange_en": "SPB_RU_MORNING",
+    "exchange_rus": "СПБ Биржа RU_MORNING",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  },
+  "10": {
+    "exchange_en": "SPB_WEEKEND",
+    "exchange_rus": "СПБ Биржа WEEKEND",
+    "exchange_main": false,
+    "exchange_schedule": "\n"
+  }
+}

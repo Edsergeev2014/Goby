@@ -6,6 +6,8 @@ import time, datetime
 from assets.color import color as cls
 from assets.arguments import Description
 from models.info_slave import InfoSlave
+from models.systems import T_Systems
+
 
 class Info():
     def __init__(self):
@@ -14,6 +16,7 @@ class Info():
         ''' Текущий день и время '''
         self.current_datetime = self.goby.get_msc(self.goby.current_datetime(),
                                                   is_datetime='datetime')
+        self.list_of_actual_exchanges = None
 
     ''' БИРЖИ И РАСПИСАНИЕ '''
     ''' Режим и расписание торгов на биржах '''
@@ -57,11 +60,17 @@ class Info():
                             # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
                             trading_days_info = exchange_info.days
                             trading_days_info = trading_days_info[0]
+                            print(self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument='exchange_ru'))
                             # return trading_days_info[0]
-                            exchange_data = dict(exchange=description.exchanges(exchange_info.exchange),
+                            # exchange_data = dict(exchange=description.exchanges(exchange_info.exchange)[0],
+                            exchange_data=dict(exchange=self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument='exchange_ru'),
                                                  # Выделенные биржи - основные в списке
                                                  exchange_en=exchange_info.exchange,
-                                                 exchange_main = True if exchange_info.exchange in self.slave.exchanges_main() else False,
+                                                 # exchange_main = True if exchange_info.exchange in self.slave.exchanges_main() else False,
+                                                 exchange_main=self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument="exchange_main"),
+                                                 # exchange_schedule=description.exchanges(exchange_info.exchange)[1] + "\n" +description.exchanges(exchange_info.exchange)[2],
+                                                 # exchange_schedule=self.exchange_schedule(exchange_info.exchange),
+                                                 exchange_schedule=self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument="exchange_schedule"),
                                                  # Ближайший день в расписании биржи:
                                                  day=self.goby.get_msc(trading_days_info.date, is_datetime='date'),
                                                  # Является ли торговым днем:
@@ -99,34 +108,39 @@ class Info():
     ''' Список бирж '''
     async def exchanges_schedules(self):
         response = await self.get_exchanges_activity(content='list_dict',
-                                                          exchanges=['MOEX',
-                                                                     'MOEX_INVESTBOX',
-                                                                     'MOEX_MORNING',
-                                                                     'MOEX_PLUS',
-                                                                     'SPB',
-                                                                     'SPB_DE',
-                                                                     'SPB_DE_MORNING',
-                                                                     'SPB_EUROBONDS',
-                                                                     'SPB_MORNING',
-                                                                     'SPB_MORNING_WEEKEND',
-                                                                     'SPB_RU_MORNING',
-                                                                     'SPB_WEEKEND',
-                                                                     'NYSE'
-                                                                     ],
-                                                          sorted=True)
+                                                     exchanges=self.actual_exchanges_from_json(argument="exchange_en_list"),
+                                                     sorted=True)
         # exchanges_main = self.slave.exchanges_main()
         # for schedule in exchanges_schedules
         # print(response)
         return response
 
-    ''' Название бирж на русском язые '''
-    def exchange_ru(self, exchange: str=None):
-        description = Description()
-        return description.exchanges(exchange)
+    ''' Cписок отобранных бирж (тикеры бирж) на английском '''
+    def actual_exchanges_from_json(self, exchange_en: str=None, argument: str=None):
+        if self.list_of_actual_exchanges is None: self.list_of_actual_exchanges = self.get_list_of_actual_exchanges()
+
+        # Подгружаем список бирж (тикеры) из файла exchanges.json:
+        if argument == "exchange_en_list": return [item['exchange_en'] for item in self.list_of_actual_exchanges]
+        # Название бирж на русском языке
+        elif argument == "exchange_ru":
+            if exchange_en is None:
+                return [item['exchange_rus'] for item in self.list_of_actual_exchanges][0]
+            else:
+                return [item['exchange_rus'] for item in self.list_of_actual_exchanges if item['exchange_en'] == exchange_en][0]
+        elif argument == "exchange_main":
+            if exchange_en is None:
+                return [item['exchange_main'] for item in self.list_of_actual_exchanges][0]
+            else:
+                return [item['exchange_main'] for item in self.list_of_actual_exchanges if item['exchange_en'] == exchange_en][0]
+        elif argument == "exchange_schedule":
+            if exchange_en is None:
+                return [item['exchange_schedule'] for item in self.list_of_actual_exchanges][0]
+            else:
+                return [item['exchange_schedule'] for item in self.list_of_actual_exchanges if item['exchange_en'] == exchange_en][0]
+        else: return
 
     ''' Проверка активности (открытости) биржи'''
     def exchange_time_activity(self, start_time, end_time, *current_datetime ):
-
         # Приводим время к единому формату для последующего сравнения:
         start_time = self.goby.standart_date_time(self.goby.get_msc(start_time, is_datetime='datetimesec'), is_datetime='datetimesec')
         end_time = self.goby.standart_date_time(self.goby.get_msc(end_time, is_datetime='datetimesec'), is_datetime='datetimesec')
@@ -167,45 +181,71 @@ class Info():
     async def get_exchange_schedule_per_week(self, exchange: str = None):
         # response = self.get_trading_activity()
         response = await self.goby.get_trading_schedules(exchange=exchange)
-        # print('get_exchange_schedule_per_week: ', type(response), response)
+        print('response: ', type(response), response)
         # return response     # возвращает Весь список бирж
         description = Description()
         # trading_day = self.goby.trading_day
         # Если ответ на запрос о расписании биржи не пустой:
-        if response.exchange is not None:
-            # Заготавливаем список для расписания по предстоящим дням
-            response_list = list()
-            # print('response: ', response)
-            # Выполняем: Цикл по списку будущих дат работы биржи,
-            # формируем для биржи: exchange_info.exchange, exchange_info.days
-            # далее: цикл по exchange_info.days - TradingDay каждой биржи.
-            # Получаем график работы биржи:
-            # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
-            exchange = description.exchanges(response.exchange)
-            days_info = response.days
-            for trading_days_info in days_info:
-                exchange_data = dict(day=self.goby.get_msc(trading_days_info.date, is_datetime='date'),
-                                     # Является ли торговым днем:
-                                     is_trading_day=trading_days_info.is_trading_day,
-                                     # Проверка на торговый день:
-                                     exchange_activity_status_description=description.exchange_activity(period='status', argument=trading_days_info.is_trading_day),
-                                     exchange_day_activity_description=description.exchange_activity(period='day', argument=trading_days_info.is_trading_day),
-                                     # Время старта торгов:
-                                     start_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.start_time, is_datetime='datetime')),
-                                     # Время окончания торгов:
-                                     end_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.end_time, is_datetime='datetime')),
-                                     # market_order_start_time=self.get_msc(trading_days_info.market_order_start_time, is_datetime='time'),
-                                     # market_order_end_time=self.get_msc(trading_days_info.market_order_end_time, is_datetime='time'),
-                                     # premarket_start_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.premarket_start_time, is_datetime='datetime')),
-                                     # premarket_end_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.premarket_end_time, is_datetime='datetime'))
-                                     )
-                # print('exchange_info: ', exchange_info)
-                # print('exchange_data: ', exchange_data)
-                response_list.append(exchange_data)
-            # print('response_list: ', response_list)
-            return response_list
-        else:
+        try:
+            if response.exchange is not None:
+                response_data = list()
+                # Заготавливаем список для расписания по предстоящим дням
+                response_list = list()
+                # print('response: ', response)
+                # Выполняем: Цикл по списку будущих дат работы биржи,
+                # формируем для биржи: exchange_info.exchange, exchange_info.days
+                # далее: цикл по exchange_info.days - TradingDay каждой биржи.
+                # Получаем график работы биржи:
+                # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
+                exchange_ru = description.exchanges(response.exchange)[0]
+                print('exchange_ru: ', exchange_ru)
+                exchange_schedule_details = description.exchanges(response.exchange)[1]
+                exchange_schedule_details_per_day = description.exchanges(response.exchange)[2]
+                response_data.append([exchange_ru, exchange_schedule_details, exchange_schedule_details_per_day])
+                print('response_data: ', type(response_data), response_data)
+                days_info = response.days
+                print('days_info: ', days_info)
+                for trading_days_info in days_info:
+                    exchange_data = dict(day=self.goby.get_msc(trading_days_info.date, is_datetime='date'),
+                                         # Является ли торговым днем:
+                                         is_trading_day=trading_days_info.is_trading_day,
+                                         exchange=exchange,
+                                         # Проверка на торговый день:
+                                         exchange_activity_status_description=description.exchange_activity(period='status', argument=trading_days_info.is_trading_day),
+                                         exchange_day_activity_description=description.exchange_activity(period='day', argument=trading_days_info.is_trading_day),
+                                         # Время старта торгов:
+                                         start_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.start_time, is_datetime='datetime')),
+                                         # Время окончания торгов:
+                                         end_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.end_time, is_datetime='datetime')),
+                                         # market_order_start_time=self.get_msc(trading_days_info.market_order_start_time, is_datetime='time'),
+                                         # market_order_end_time=self.get_msc(trading_days_info.market_order_end_time, is_datetime='time'),
+                                         # premarket_start_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.premarket_start_time, is_datetime='datetime')),
+                                         # premarket_end_time=self.slave.check_notime(self.goby.get_msc(trading_days_info.premarket_end_time, is_datetime='datetime'))
+                                         )
+                    # print('exchange_info: ', exchange_info)
+                    # print('exchange_data: ', exchange_data)
+                    response_list.append(exchange_data)
+                # print('response_list: ', response_list)
+                response_data.append(response_list)
+                print('response_data: ', len(response_data), response_data)
+                return response_data
+            else:
+                return
+        except:
             return
+
+    # Список актуальных для отображения бирж
+    def get_list_of_actual_exchanges(self):
+        t_systems = T_Systems()
+        data = t_systems.readJson(file='exchanges')
+        # list_of_actual_exchanges = data.values.tolist()  # Convert all values to list
+        # list_of_actual_exchanges = data.to_dict('records')  # Convert all values to list of dict
+        # print('list_of_actual_exchanges: ', list_of_actual_exchanges)
+        # return data.values.tolist()  # Convert all values
+        # return list_of_actual_exchanges
+        return data.to_dict('records')
+        # return data.loc[data['figi'] == figi, 'name'].iloc[0]  # Возвращаем значение name
+
 
 
     ''' АККАУНТЫ '''

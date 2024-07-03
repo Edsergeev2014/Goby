@@ -41,11 +41,11 @@
                     {% if schedule.exchange_activity_status %}
     <!--                Проверка на важность биржи:-->
                     {% if schedule.exchange_main %}
-                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en" title="{{ schedule.exchange_schedule }}">
                         <span class="col-3 small text-primary"><b>{{ schedule.exchange }}</b></span>
                     </button>
                     {% else %}
-                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en" title="{{ schedule.exchange_schedule }}">
                         <span class="col-3 small text-primary">{{ schedule.exchange }}</span>
                     </button>
 
@@ -59,11 +59,11 @@
     <!--                Если биржа закрыта: неторговый день или неторговое время:-->
     <!--                Проверка на важность биржи:-->
                     {% if schedule.exchange_main %}
-                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en" title="{{ schedule.exchange_schedule }}">
                         <span class="col-3 small text-black-50"><b>{{ schedule.exchange }}</b></span>
                     </button>
                     {% else %}
-                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en">
+                    <button class="btn btn-outline-light" type="submit" value="{{ schedule.exchange_en }}" name="schedule.exchange_en" title="{{ schedule.exchange_schedule }}">
                         <span class="col-3 small text-black-50">{{ schedule.exchange }}</span>
                     </button>
                     {% endif %}

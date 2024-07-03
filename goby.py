@@ -199,8 +199,8 @@ class Goby():
     #         description = Description()
     #
     #         if tickers is not None:
-    #             for ticker in tickers:
     #                 if figies is None: figies = list()
+    #             for ticker in tickers:
     #                 figies.append(self.figi(ticker=ticker))
     #             # Другие варианты запросов через ticker:
     #             # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER, class_code=self.class_code(ticker=ticker), id=ticker)

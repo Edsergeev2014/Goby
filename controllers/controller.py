@@ -3,6 +3,7 @@ import asyncio
 
 from models.info import Info
 from models.instruments import T_Instruments
+from models.portfolio import T_Portfolio
 
 class Controller_Info():
     def __init__(self):
@@ -66,3 +67,11 @@ class Controller_Instruments():
             print("Control: Заполните данные по запросу акции")
             return None
         return response
+
+class Controller_Portfolio():
+    def __init__(self):
+        self.t_portfolio = T_Portfolio()
+
+    async def get_portfolio_positions(self):
+        portfolio_positions = await self.t_portfolio.get_portfolio_positions()
+        return portfolio_positions

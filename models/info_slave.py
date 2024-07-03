@@ -14,4 +14,4 @@ class InfoSlave():
     def exchanges_main(self):
         # description = Description()
         # return [description.exchanges('MOEX'), description.exchanges('SPB'),]
-        return ['MOEX', 'SPB']
+        return ['MOEX_EVENING_WEEKEND', 'SPB', 'NYSE']

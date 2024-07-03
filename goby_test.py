@@ -11,6 +11,7 @@ from assets.color import color as cls
 from assets.arguments import Description
 # Загружаем модули Тинькофф Инвестиции
 from tinkoff.invest import Account, Client, AsyncClient, OperationState, OrderDirection, OrderType, InstrumentStatus, InstrumentIdType, MarketDataRequest, InstrumentsRequest, CandleInterval
+from tinkoff.invest.services import OperationsService
 from tinkoff.invest import Quotation, MoneyValue
 from tinkoff.invest import TradingDay
 # from tinkoff.invest import TradingSchedule
@@ -23,7 +24,8 @@ from tinkoff.invest.constants import INVEST_GRPC_API_SANDBOX
 
 class Goby():
     def __init__(self):
-        self.__config = AutoConfig(search_path='assets/tsc_tokens/sandbox')
+        # self.__config = AutoConfig(search_path='assets/tsc_tokens/sandbox')
+        self.__config = AutoConfig(search_path='assets/tsc_tokens/onlyread')
         self.__tsc_token = self.__config('TSC_TOKEN')
         self.__target = INVEST_GRPC_API_SANDBOX
 
@@ -113,10 +115,13 @@ class Goby():
                 response = await client.instruments.trading_schedules(exchange=exchange)
             else:
                 response = await client.instruments.trading_schedules()
-        response =  response.exchanges[0]
-        # tradingschedule = TradingSchedule()
-        # response = tradingschedule.days
-        # return response.exchanges
+        # Проверка на отсутствие совпадений для запроса
+        print('response trading_schedules: ', response)
+        if response.exchanges:
+            response =  response.exchanges[0]
+            # tradingschedule = TradingSchedule()
+            # response = tradingschedule.days
+            # return response.exchanges
         return response
 
     def trading_day(self):
@@ -127,20 +132,30 @@ class Goby():
     ''' Получить список открытых аккаунтов '''
     async def get_accounts(self):
         # x = self.test_client()
-        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        # async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        async with AsyncClient(token=self.__tsc_token) as client:
             response = await client.users.get_accounts()
-            # print("responce: ", responce)
+            # print("responce: ", response)
             return response.accounts
 
+    ''' СЕРВИС ПОРТФЕЛЯ '''
+    ''' Получить информацию о позициях в портфеле '''
+    async def get_portfolio_positions(self,  account_id: str = ''):
+        # async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        async with AsyncClient(token=self.__tsc_token) as client:
+            response = await client.operations.get_positions(account_id=account_id)
+            return response.securities  # Получаем только часть информации - Список ценно-бумажных позиций портфеля.
 
     ''' СЕРВИС ИНСТРУМЕНТОВ '''
     ''' Получить информацию по акции '''
     async def get_instrument_info(self, ticker='', figi=''):
-        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        # async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        async with AsyncClient(token=self.__tsc_token) as client:
             if figi:
-                # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id='BBG000B9XRY4')
+                # print('figi: ', figi)
+                # response = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id='BBG000B9XRY4')
                 response = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id=figi)
-                # print("figi, response: ", response)
+                print("figi, response: ", response)
             elif ticker:
                 # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER, class_code='SPBXM', id='AAPL')
                 response = await client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_TICKER, class_code='SPBXM', id=ticker)
@@ -199,7 +214,8 @@ class Goby():
 
     ''' Получить свечи по инструменту '''
     async def get_stock_candles(self, figi, from_, to, interval):
-        async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        # async with AsyncClient(token=self.__tsc_token, target=self.__target) as client:
+        async with AsyncClient(token=self.__tsc_token) as client:
             response = await client.market_data.get_candles(figi=figi, from_=from_, to=to, interval=interval)
             '''format: from=datetime.datetime(2021,1,1), to=datetime.datetime.now(), interval=CandleInterval.CANDLE_INTERVAL_DAY '''
             # print("response: ", response)
