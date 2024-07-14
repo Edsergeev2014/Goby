@@ -2,6 +2,7 @@
 # from models.instruments_slave import InstrumentsSlave
 from assets.arguments import Description
 from goby_test import Goby
+from models.info import Info
 from models.systems import T_Systems
 
 import asyncio
@@ -12,6 +13,7 @@ class T_Instruments():
         # self.instruments_slave = InstrumentsSlave()
         self.description = Description()
         self.goby = Goby()
+        self.info = Info()
         self.t_systems = T_Systems()
 
     async def get_instruments_info(self, tickers: list = None, figies: list = None):
@@ -41,6 +43,8 @@ class T_Instruments():
             for figi in figies:
                 # print('figi: ', type(figi), figi)
                 instrument_data = await self.goby.get_instrument_info(figi=figi)
+                # print('instrument_data.exchange: ', instrument_data.exchange)
+                # print('exchange_schedule:', self.info.actual_exchanges_from_json(exchange_en=instrument_data.exchange, argument='exchange_schedule'))
                 if instrument_data is None: break   # Проверка на пустое значение (не найден инструмент по figi)
                 # response = client.instruments.share_by(id_type=InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id='BBG000B9XRY4')
                 # response = await self.goby.get_instrument_info(figi=figi)
@@ -94,9 +98,10 @@ class T_Instruments():
                                        last_7days_prices=last_7days_prices,
                                        green_or_red=green if last_7days_prices[-1] > last_7days_prices[0] else red,     # Цвет графика
                                        currency=description.currency_type(instrument_data.currency, flag='simbol'),
-                                       # exchange=description.exchanges(instrument_data.exchange[0]),
-                                       exchange=description.exchanges(instrument_data.exchange)[0],
-                                       exchange_schedule = description.exchanges(instrument_data.exchange)[1] + "\n" + description.exchanges(instrument_data.exchange)[2],
+                                       # exchange=description.exchanges(instrument_data.exchange),
+                                       exchange=self.info.actual_exchanges_from_json(exchange_en=instrument_data.exchange, argument='exchange_ru'),
+                                       # exchange_schedule = description.exchanges(instrument_data.exchange)[1] + "\n" + description.exchanges(instrument_data.exchange)[2],
+                                       exchange_schedule = self.info.actual_exchanges_from_json(exchange_en=instrument_data.exchange, argument='exchange_schedule'),
                                        trading_status=description.trading_status(instrument_data.trading_status),
                                        buy_available_flag=instrument_data.buy_available_flag,
                                        sell_available_flag=instrument_data.sell_available_flag,

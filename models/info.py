@@ -60,7 +60,7 @@ class Info():
                             # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
                             trading_days_info = exchange_info.days
                             trading_days_info = trading_days_info[0]
-                            print(self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument='exchange_ru'))
+                            # print(self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument='exchange_ru'))
                             # return trading_days_info[0]
                             # exchange_data = dict(exchange=description.exchanges(exchange_info.exchange)[0],
                             exchange_data=dict(exchange=self.actual_exchanges_from_json(exchange_en=exchange_info.exchange, argument='exchange_ru'),
@@ -117,8 +117,10 @@ class Info():
 
     ''' Cписок отобранных бирж (тикеры бирж) на английском '''
     def actual_exchanges_from_json(self, exchange_en: str=None, argument: str=None):
+        # Загружаем список бирж из файла,если ранее этого еще не делали
         if self.list_of_actual_exchanges is None: self.list_of_actual_exchanges = self.get_list_of_actual_exchanges()
-
+        #     print ("Список бирж подгружаем из файла json...")
+        # else: print ("Список бирж находится уже в памяти...")
         # Подгружаем список бирж (тикеры) из файла exchanges.json:
         if argument == "exchange_en_list": return [item['exchange_en'] for item in self.list_of_actual_exchanges]
         # Название бирж на русском языке
@@ -181,7 +183,7 @@ class Info():
     async def get_exchange_schedule_per_week(self, exchange: str = None):
         # response = self.get_trading_activity()
         response = await self.goby.get_trading_schedules(exchange=exchange)
-        print('response: ', type(response), response)
+        # print('response: ', type(response), response)
         # return response     # возвращает Весь список бирж
         description = Description()
         # trading_day = self.goby.trading_day
@@ -197,14 +199,14 @@ class Info():
                 # далее: цикл по exchange_info.days - TradingDay каждой биржи.
                 # Получаем график работы биржи:
                 # exchange_info cостоит из: exchange_info.exchange, exchange_info.days
-                exchange_ru = description.exchanges(response.exchange)[0]
-                print('exchange_ru: ', exchange_ru)
-                exchange_schedule_details = description.exchanges(response.exchange)[1]
-                exchange_schedule_details_per_day = description.exchanges(response.exchange)[2]
+                exchange_ru = self.actual_exchanges_from_json(exchange_en=response.exchange, argument='exchange_ru')
+                # print('exchange_ru: ', exchange_ru)
+                exchange_schedule_details = self.actual_exchanges_from_json(exchange_en=response.exchange, argument='exchange_schedule')
+                exchange_schedule_details_per_day = None
                 response_data.append([exchange_ru, exchange_schedule_details, exchange_schedule_details_per_day])
-                print('response_data: ', type(response_data), response_data)
+                # print('response_data: ', type(response_data), response_data)
                 days_info = response.days
-                print('days_info: ', days_info)
+                # print('days_info: ', days_info)
                 for trading_days_info in days_info:
                     exchange_data = dict(day=self.goby.get_msc(trading_days_info.date, is_datetime='date'),
                                          # Является ли торговым днем:
@@ -227,7 +229,7 @@ class Info():
                     response_list.append(exchange_data)
                 # print('response_list: ', response_list)
                 response_data.append(response_list)
-                print('response_data: ', len(response_data), response_data)
+                # print('response_data: ', len(response_data), response_data)
                 return response_data
             else:
                 return
